@@ -1,75 +1,35 @@
-import React, { useState } from 'react';
-import axios from 'axios';
+import React, { useEffect } from 'react';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import Layout from './components/Layout';
+import Dashboard from './components/Dashboard';
+import NewScrape from './components/NewScrape';
+import History from './components/History';
+import Settings from './components/Settings';
 import './index.css';
 
 function App() {
-    const [books, setBooks] = useState([]);
-    const [loading, setLoading] = useState(false);
-    const [error, setError] = useState(null);
-
-    const handleScrape = async () => {
-        setLoading(true);
-        setError(null);
-        try {
-            const response = await axios.get('http://localhost:5000/api/scrape');
-            setBooks(response.data);
-        } catch (err) {
-            setError('Failed to fetch data. Ensure backend is running.');
-            console.error(err);
-        } finally {
-            setLoading(false);
+    useEffect(() => {
+        // Initialize Theme
+        const storedTheme = localStorage.getItem('theme');
+        if (storedTheme === 'dark') {
+            document.body.classList.add('dark-mode');
+        } else {
+            document.body.classList.remove('dark-mode');
         }
-    };
-
-    const handleDownload = async () => {
-        if (books.length === 0) return;
-        try {
-            const response = await axios.post('http://localhost:5000/api/download-csv', { data: books }, {
-                responseType: 'blob',
-            });
-
-            const url = window.URL.createObjectURL(new Blob([response.data]));
-            const link = document.createElement('a');
-            link.href = url;
-            link.setAttribute('download', 'books.csv');
-            document.body.appendChild(link);
-            link.click();
-            link.remove();
-        } catch (err) {
-            console.error('Download failed', err);
-            setError('Failed to download CSV.');
-        }
-    };
+    }, []);
 
     return (
-        <div className="App">
-            <h1>📚 Book Scraper</h1>
-            <p>Extracting data from books.toscrape.com</p>
-
-            <div className="controls">
-                <button onClick={handleScrape} disabled={loading}>
-                    {loading ? 'Scraping...' : 'Start Scraping'}
-                </button>
-                {books.length > 0 && (
-                    <button onClick={handleDownload} style={{ backgroundColor: '#2ecc71' }}>
-                        Download CSV
-                    </button>
-                )}
-            </div>
-
-            {error && <p style={{ color: 'red' }}>{error}</p>}
-
-            <div className="card-grid">
-                {books.map((book, index) => (
-                    <div key={index} className="card">
-                        <img src={book.imageUrl} alt={book.title} />
-                        <h3 title={book.title}>{book.title}</h3>
-                        <div className="price">{book.price}</div>
-                        <div className="rating">Rating: {book.rating}</div>
-                    </div>
-                ))}
-            </div>
-        </div>
+        <BrowserRouter>
+            <Routes>
+                <Route path="/" element={<Layout />}>
+                    <Route index element={<Dashboard />} />
+                    <Route path="scrape" element={<NewScrape />} />
+                    <Route path="history" element={<History />} />
+                    <Route path="settings" element={<Settings />} />
+                    <Route path="*" element={<Navigate to="/" replace />} />
+                </Route>
+            </Routes>
+        </BrowserRouter>
     );
 }
 
