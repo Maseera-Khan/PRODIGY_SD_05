@@ -59,7 +59,93 @@ The software is fully prepared for the world:
 
 ---
 
-## �📂 Project Structure
+## 📊 UML Diagrams
+
+### **1. System Architecture Diagram**
+Visualizes the flow between the user, the cloud-hosted unified server, and the target websites.
+
+```mermaid
+graph TD
+    User([User / Friend's Device])
+    Internet((Internet / Cloud))
+    
+    subgraph "Render Cloud (Unified Server)"
+        Frontend[React Frontend - UI]
+        Backend[Node.js / Express Backend]
+        DB[(SQLite Database)]
+    end
+    
+    Target[Target Website (Amazon/eBay etc.)]
+    
+    User <-->|HTTPS| Internet
+    Internet <-->|Unified Root| Frontend
+    Frontend <-->|API Requests| Backend
+    Backend <-->|Sequelize| DB
+    Backend <-->|Axios / Cheerio| Target
+```
+
+### **2. Class Diagram**
+Shows the structure of the data model and the controller logic.
+
+```mermaid
+classDiagram
+    class Product {
+        +Integer id
+        +String url
+        +String name
+        +String price
+        +String currency
+        +String rating
+        +String image
+        +String source
+        +JSON metadata
+        +DateTime createdAt
+        +DateTime updatedAt
+    }
+
+    class ProductController {
+        +scrape(req, res)
+        +getHistory(req, res)
+        +downloadCsv(req, res)
+    }
+
+    class ProductRoutes {
+        +/api/scrape (POST)
+        +/api/history (GET)
+        +/api/download-csv (POST)
+    }
+
+    ProductRoutes --> ProductController : Dispatches
+    ProductController --> Product : Manages (CRUD)
+```
+
+### **3. Sequence Diagram (The Scrape Flow)**
+Shows the step-by-step process of a single scraping request.
+
+```mermaid
+sequenceDiagram
+    participant U as User
+    participant F as Frontend (React)
+    participant B as Backend (Express)
+    participant S as Scraper (Cheerio)
+    participant D as Database (SQLite)
+    participant T as Target Website
+
+    U->>F: Enter URL & Click Scrape
+    F->>B: POST /api/scrape
+    B->>T: Fetch HTML (Axios)
+    T-->>B: Return HTML Source
+    B->>S: Parse HTML & Extract Data
+    S-->>B: Return Scraped JSON
+    B->>D: Save Scrape Result
+    D-->>B: Success
+    B-->>F: Return Scraped Data
+    F-->>U: Display Result on Dashboard
+```
+
+---
+
+## 📂 Project Structure
 ```text
 web-scraper-task/
 ├── backend/
