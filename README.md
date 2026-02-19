@@ -44,7 +44,22 @@ The software is fully prepared for the world:
 
 ---
 
-## 📂 Project Structure
+## �️ Development Environment & Tooling
+
+### **System Information**
+- **Operating System**: Windows 10/11 (Development & Deployment Environment).
+- **RAM**: Developed on a system with 8GB/16GB (Standard performance profile for Node.js development).
+- **Environment**: Node.js v24.13.0 Runtime.
+
+### **Testing & Development Tools**
+- **Manual Testing**: Used the **OmniScrape Dashboard** directly to verify end-to-end flows.
+- **API Testing**: Performed via **Terminal commands (curl)** and custom script verification (`test_backend.js`) instead of external GUI tools like Postman to ensure rapid iteration.
+- **Tunneling**: Used **OpenSSH** and **localhost.run** for real-time global access testing.
+- **Version Control**: Git (hosted on GitHub) for deployment and tracking.
+
+---
+
+## �📂 Project Structure
 ```text
 web-scraper-task/
 ├── backend/
